@@ -1,0 +1,627 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/mast/telegram-bot-api#readme">telegram-bot-api (v1.2.0)</a>
+</h1>
+<h4>Node.js module for Telegram Bot API (https://core.telegram.org/bots/api)</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.telegram-bot-api">module telegram-bot-api</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.telegram-bot-api.telegram-bot-api">
+            function <span class="apidocSignatureSpan"></span>telegram-bot-api
+            <span class="apidocSignatureSpan">(params)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.telegram-bot-api.super_">
+            function <span class="apidocSignatureSpan">telegram-bot-api.</span>super_
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.telegram-bot-api.telegram_bot">
+            function <span class="apidocSignatureSpan">telegram-bot-api.</span>telegram_bot
+            <span class="apidocSignatureSpan">(params)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.telegram-bot-api.toString">
+            function <span class="apidocSignatureSpan">telegram-bot-api.</span>toString
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.telegram-bot-api.telegram_bot">module telegram-bot-api.telegram_bot</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.telegram-bot-api.telegram_bot.telegram_bot">
+            function <span class="apidocSignatureSpan">telegram-bot-api.</span>telegram_bot
+            <span class="apidocSignatureSpan">(params)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.telegram-bot-api.telegram_bot.super_">
+            function <span class="apidocSignatureSpan">telegram-bot-api.telegram_bot.</span>super_
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.telegram-bot-api" id="apidoc.module.telegram-bot-api">module telegram-bot-api</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.telegram-bot-api.telegram-bot-api" id="apidoc.element.telegram-bot-api.telegram-bot-api">
+        function <span class="apidocSignatureSpan"></span>telegram-bot-api
+        <span class="apidocSignatureSpan">(params)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">telegram-bot-api = function (params)
+{
+    // Manage REST connection settings
+    var proxy = null;
+    if (params.http_proxy !== undefined)
+    {
+        if (params.http_proxy.https === true)
+        {
+            proxy = 'https://';
+        }
+        else
+        {
+            proxy = 'http://';
+        }
+
+        if (params.http_proxy.user !== undefined &amp;&amp;
+            params.http_proxy.password !== undefined)
+        {
+            proxy += params.http_proxy.user + ':' + params.http_proxy.password + '@';
+        }
+
+        proxy += params.http_proxy.host + ':' + params.http_proxy.port;
+    }
+
+    // Create some global vars
+    var self = this;
+    var _updatesOffset = 0;
+
+    var _rest = request.defaults({
+        proxy: proxy
+    });
+
+    // Default settings
+    var _settings = {
+        updates: {
+            enabled: false,
+            get_interval: 1000,
+            pooling_timeout: 0
+        }
+    };
+
+    // Extend default settings with passed params
+    extend(true, _settings, params);
+
+    // Warn use in case if he miss some important params
+    if (!_settings.token)
+    {
+        console.error('[TelegramBot]: you should pass access token in params');
+    }
+
+    // This is base url for API
+    var _baseurl = 'https://api.telegram.org/bot' + _settings.token + '/';
+
+    /**
+     * INTERNAL FUNCTION
+     * Parse response
+     */
+    function commonResponseHandler(data)
+    {
+        return new Promise(function(resolve, reject)
+        {
+            if (data.ok === false)
+            {
+                // Request failed
+                reject({
+                    description: data.description !== undefined ? data.description : 'Not set by API',
+                    code: data.error_code !== undefined ? data.error_code : 'Not set by API'
+                });
+            }
+            else
+            {
+                resolve(data.result);
+            }
+        });
+    }
+
+    /**
+     * INTERNAL FUNCTION
+     * Gets updates from telegram and starts loop
+     */
+    function internalGetUpdates()
+    {
+        self.getUpdates({
+            offset: _updatesOffset,
+            limit: 50,
+            timeout: _settings.updates.pooling_timeout
+        })
+        .then(function (data)
+        {
+            if (!data)
+            {
+                throw new Error("[TelegramBot]: Received data is empty.");
+            }
+            else
+            {
+                // We received some items, loop over them
+                ('forEach' in data) &amp;&amp; data.forEach(function (item)
+                {
+                    // Account update_id as next offset
+                    // to avoid dublicated updates
+                    _updatesOffset = (item.update_id &gt;= _updatesOffset ? item.update_id + 1 : _updatesOffset);
+
+                    // Update events
+                    self.emit('update', item);
+
+                    // Inline events
+                    if (item.callback_query) {
+                        self.emit('inline.callback.query', item.callback_query);
+                    }
+
+                    if (item.edited_message) {
+                        self.emit('edited.message', item.edited_message);
+                    }
+
+                    // On inline query is received
+                    if(item.inline_query)
+                    {
+                        self.emit('inline.query', item.inline_query);
+                    }
+
+                    // On inline result is chosen
+                    if(item.chosen_inline_result)
+                    {
+                        self.emit('inline.result', item.chosen_inline_result);
+                    }
+
+                    // Notify subscriber
+                    self.emit('message', item.message);
+                });
+            }
+
+            // Schedule follow up
+            setTimeout(internalGetUpdates, _settings.updates.get_interval);
+        })
+        .catch(function(err)
+        {
+            console.error('[TelegramBot]: Failed to get updates from Telegram servers'); ...</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.telegram-bot-api.super_" id="apidoc.element.telegram-bot-api.super_">
+        function <span class="apidocSignatureSpan">telegram-bot-api.</span>super_
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function EventEmitter() {
+  EventEmitter.init.call(this);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.telegram-bot-api.telegram_bot" id="apidoc.element.telegram-bot-api.telegram_bot">
+        function <span class="apidocSignatureSpan">telegram-bot-api.</span>telegram_bot
+        <span class="apidocSignatureSpan">(params)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">telegram_bot = function (params)
+{
+    // Manage REST connection settings
+    var proxy = null;
+    if (params.http_proxy !== undefined)
+    {
+        if (params.http_proxy.https === true)
+        {
+            proxy = 'https://';
+        }
+        else
+        {
+            proxy = 'http://';
+        }
+
+        if (params.http_proxy.user !== undefined &amp;&amp;
+            params.http_proxy.password !== undefined)
+        {
+            proxy += params.http_proxy.user + ':' + params.http_proxy.password + '@';
+        }
+
+        proxy += params.http_proxy.host + ':' + params.http_proxy.port;
+    }
+
+    // Create some global vars
+    var self = this;
+    var _updatesOffset = 0;
+
+    var _rest = request.defaults({
+        proxy: proxy
+    });
+
+    // Default settings
+    var _settings = {
+        updates: {
+            enabled: false,
+            get_interval: 1000,
+            pooling_timeout: 0
+        }
+    };
+
+    // Extend default settings with passed params
+    extend(true, _settings, params);
+
+    // Warn use in case if he miss some important params
+    if (!_settings.token)
+    {
+        console.error('[TelegramBot]: you should pass access token in params');
+    }
+
+    // This is base url for API
+    var _baseurl = 'https://api.telegram.org/bot' + _settings.token + '/';
+
+    /**
+     * INTERNAL FUNCTION
+     * Parse response
+     */
+    function commonResponseHandler(data)
+    {
+        return new Promise(function(resolve, reject)
+        {
+            if (data.ok === false)
+            {
+                // Request failed
+                reject({
+                    description: data.description !== undefined ? data.description : 'Not set by API',
+                    code: data.error_code !== undefined ? data.error_code : 'Not set by API'
+                });
+            }
+            else
+            {
+                resolve(data.result);
+            }
+        });
+    }
+
+    /**
+     * INTERNAL FUNCTION
+     * Gets updates from telegram and starts loop
+     */
+    function internalGetUpdates()
+    {
+        self.getUpdates({
+            offset: _updatesOffset,
+            limit: 50,
+            timeout: _settings.updates.pooling_timeout
+        })
+        .then(function (data)
+        {
+            if (!data)
+            {
+                throw new Error("[TelegramBot]: Received data is empty.");
+            }
+            else
+            {
+                // We received some items, loop over them
+                ('forEach' in data) &amp;&amp; data.forEach(function (item)
+                {
+                    // Account update_id as next offset
+                    // to avoid dublicated updates
+                    _updatesOffset = (item.update_id &gt;= _updatesOffset ? item.update_id + 1 : _updatesOffset);
+
+                    // Update events
+                    self.emit('update', item);
+
+                    // Inline events
+                    if (item.callback_query) {
+                        self.emit('inline.callback.query', item.callback_query);
+                    }
+
+                    if (item.edited_message) {
+                        self.emit('edited.message', item.edited_message);
+                    }
+
+                    // On inline query is received
+                    if(item.inline_query)
+                    {
+                        self.emit('inline.query', item.inline_query);
+                    }
+
+                    // On inline result is chosen
+                    if(item.chosen_inline_result)
+                    {
+                        self.emit('inline.result', item.chosen_inline_result);
+                    }
+
+                    // Notify subscriber
+                    self.emit('message', item.message);
+                });
+            }
+
+            // Schedule follow up
+            setTimeout(internalGetUpdates, _settings.updates.get_interval);
+        })
+        .catch(function(err)
+        {
+            console.error('[TelegramBot]: Failed to get updates from Telegram servers'); ...</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.telegram-bot-api.toString" id="apidoc.element.telegram-bot-api.toString">
+        function <span class="apidocSignatureSpan">telegram-bot-api.</span>toString
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">toString = function () {
+    return text;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.telegram-bot-api.telegram_bot" id="apidoc.module.telegram-bot-api.telegram_bot">module telegram-bot-api.telegram_bot</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.telegram-bot-api.telegram_bot.telegram_bot" id="apidoc.element.telegram-bot-api.telegram_bot.telegram_bot">
+        function <span class="apidocSignatureSpan">telegram-bot-api.</span>telegram_bot
+        <span class="apidocSignatureSpan">(params)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">telegram_bot = function (params)
+{
+    // Manage REST connection settings
+    var proxy = null;
+    if (params.http_proxy !== undefined)
+    {
+        if (params.http_proxy.https === true)
+        {
+            proxy = 'https://';
+        }
+        else
+        {
+            proxy = 'http://';
+        }
+
+        if (params.http_proxy.user !== undefined &amp;&amp;
+            params.http_proxy.password !== undefined)
+        {
+            proxy += params.http_proxy.user + ':' + params.http_proxy.password + '@';
+        }
+
+        proxy += params.http_proxy.host + ':' + params.http_proxy.port;
+    }
+
+    // Create some global vars
+    var self = this;
+    var _updatesOffset = 0;
+
+    var _rest = request.defaults({
+        proxy: proxy
+    });
+
+    // Default settings
+    var _settings = {
+        updates: {
+            enabled: false,
+            get_interval: 1000,
+            pooling_timeout: 0
+        }
+    };
+
+    // Extend default settings with passed params
+    extend(true, _settings, params);
+
+    // Warn use in case if he miss some important params
+    if (!_settings.token)
+    {
+        console.error('[TelegramBot]: you should pass access token in params');
+    }
+
+    // This is base url for API
+    var _baseurl = 'https://api.telegram.org/bot' + _settings.token + '/';
+
+    /**
+     * INTERNAL FUNCTION
+     * Parse response
+     */
+    function commonResponseHandler(data)
+    {
+        return new Promise(function(resolve, reject)
+        {
+            if (data.ok === false)
+            {
+                // Request failed
+                reject({
+                    description: data.description !== undefined ? data.description : 'Not set by API',
+                    code: data.error_code !== undefined ? data.error_code : 'Not set by API'
+                });
+            }
+            else
+            {
+                resolve(data.result);
+            }
+        });
+    }
+
+    /**
+     * INTERNAL FUNCTION
+     * Gets updates from telegram and starts loop
+     */
+    function internalGetUpdates()
+    {
+        self.getUpdates({
+            offset: _updatesOffset,
+            limit: 50,
+            timeout: _settings.updates.pooling_timeout
+        })
+        .then(function (data)
+        {
+            if (!data)
+            {
+                throw new Error("[TelegramBot]: Received data is empty.");
+            }
+            else
+            {
+                // We received some items, loop over them
+                ('forEach' in data) &amp;&amp; data.forEach(function (item)
+                {
+                    // Account update_id as next offset
+                    // to avoid dublicated updates
+                    _updatesOffset = (item.update_id &gt;= _updatesOffset ? item.update_id + 1 : _updatesOffset);
+
+                    // Update events
+                    self.emit('update', item);
+
+                    // Inline events
+                    if (item.callback_query) {
+                        self.emit('inline.callback.query', item.callback_query);
+                    }
+
+                    if (item.edited_message) {
+                        self.emit('edited.message', item.edited_message);
+                    }
+
+                    // On inline query is received
+                    if(item.inline_query)
+                    {
+                        self.emit('inline.query', item.inline_query);
+                    }
+
+                    // On inline result is chosen
+                    if(item.chosen_inline_result)
+                    {
+                        self.emit('inline.result', item.chosen_inline_result);
+                    }
+
+                    // Notify subscriber
+                    self.emit('message', item.message);
+                });
+            }
+
+            // Schedule follow up
+            setTimeout(internalGetUpdates, _settings.updates.get_interval);
+        })
+        .catch(function(err)
+        {
+            console.error('[TelegramBot]: Failed to get updates from Telegram servers'); ...</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.telegram-bot-api.telegram_bot.super_" id="apidoc.element.telegram-bot-api.telegram_bot.super_">
+        function <span class="apidocSignatureSpan">telegram-bot-api.telegram_bot.</span>super_
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function EventEmitter() {
+  EventEmitter.init.call(this);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
