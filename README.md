@@ -1,6 +1,6 @@
 # npmdoc-telegram-bot-api
 
-#### api documentation for  [telegram-bot-api (v1.2.0)](https://github.com/mast/telegram-bot-api#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-telegram-bot-api.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-telegram-bot-api) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-telegram-bot-api.svg)](https://travis-ci.org/npmdoc/node-npmdoc-telegram-bot-api)
+#### basic api documentation for  [telegram-bot-api (v1.2.0)](https://github.com/mast/telegram-bot-api#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-telegram-bot-api.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-telegram-bot-api) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-telegram-bot-api.svg)](https://travis-ci.org/npmdoc/node-npmdoc-telegram-bot-api)
 
 #### Node.js module for Telegram Bot API (https://core.telegram.org/bots/api)
 
@@ -74,7 +74,8 @@
         "url": "git+https://github.com/mast/telegram-bot-api.git"
     },
     "scripts": {},
-    "version": "1.2.0"
+    "version": "1.2.0",
+    "bin": {}
 }
 ```
 
